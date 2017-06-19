@@ -41,7 +41,7 @@ var TurboStorage = function(config){
 
 				// progres is 0-100, e.g. "37.67389454804663"
 				this.on('totaluploadprogress', function(progress){
-					console.log('totaluploadprogress: '+progress)
+					console.log('progress: '+progress+'%')
 				})
 			},
 			sending: function(file, xhr){
@@ -87,7 +87,13 @@ var TurboStorage = function(config){
 
 					var formData = new FormData()
 					formData.append('file', file)
-					xhr.send(formData)
+					// xhr.send(formData)
+
+					var _send = xhr.send
+					xhr.send = function(){
+						_send.call(xhr, formData)
+					}
+
 					return
 				}
 
@@ -120,7 +126,7 @@ var TurboStorage = function(config){
 					    	return
 			        	}
 
-						console.log('UPLOAD URL: '+JSON.stringify(data))
+						// console.log('UPLOAD URL: '+JSON.stringify(data))
 						// {"confirmation":"success","result":
 						// {"signedRequest":"https://s3.amazonaws.com/apps.velocity360.io%2Frec-league-iseysu/myfile.jpg…=1497822827&Signature=jRS6ZqfJvsvoXy66zHHgYIKn2bE%3D&x-amz-acl=public-read",
 						// "url":"https://apps.velocity360.io.s3.amazonaws.com/myfile.jpg"}}
