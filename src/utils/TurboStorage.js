@@ -27,6 +27,7 @@ var TurboStorage = function(config){
 		var uploadUrl = null
 		var headers = null
 		var method = 'PUT'
+		var _completion = completion
 
 		var options = {
 			url: '/temp', // this is not the actual url. it gets reset in turbo.executeFunction(...)
@@ -69,7 +70,7 @@ var TurboStorage = function(config){
 
 					// S3 basically returns nothing
 
-					// TODO: send this to Turbo to create Blob entity:
+					// send this to Turbo Dashboard to create Blob entity:
 					var blob = {
 						filename: file.name, 
 						type: file.type,
@@ -78,7 +79,29 @@ var TurboStorage = function(config){
 						site: site.id
 					}
 
-					console.log('FILE METADATA: ' + JSON.stringify(blob))
+				    $.ajax({
+				        url: 'https://turbo-dashboard.herokuapp.com/api/blob',
+				        type: 'POST',
+				        data: JSON.stringify(blob),
+				        contentType: 'application/json; charset=utf-8',
+				        dataType: 'json',
+				        async: true,
+				        success: function(data, status) {
+				        	if (data.confirmation != 'success'){
+						    	_completion(new Error('Error: ' + data.message), null)
+						    	return
+				        	}
+
+				        	console.log('FILE UPLOADED: ' + JSON.stringify(data))
+				        	_completion(null, data)
+							return
+				        },
+					    error: function(xhr, status, error) { 
+					    	// alert('Error: '+error.message)
+						    _completion(new Error('Error: ' + error.message), null)
+							return
+					    }
+				    })
 				})
 
 				// this is an image
