@@ -72,7 +72,7 @@ var TurboStorage = function(config){
 
 					// send this to Turbo Dashboard to create Blob entity:
 					var blob = {
-						filename: file.name, 
+						name: file.name, 
 						type: file.type,
 						size: file.size,
 						url: url,
