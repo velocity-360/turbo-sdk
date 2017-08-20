@@ -505,6 +505,7 @@ var Turbo = function(credentials){
 		createUser: createUser,
 		currentUser: currentUser,
 		login: login,
+		logout: logout,
 		queryParams: queryParams,
 		create: create,
 		fetch: fetch,
@@ -514,7 +515,7 @@ var Turbo = function(credentials){
 		sendEmail: emailUtils.sendEmail,
 		loadStripeHandler: stripeManager.loadStripeHandler,
 		executeFunction: functionsManager.executeFunction,
-		initializeDropzone: storageMgr.initializeDropzone
+		uploadFile: storageMgr.uploadFile
 	}
 
 	return client
