@@ -74,6 +74,11 @@ var StripeMgr = function(config){ // config container BASE_URL and site_id
 	// }
 
 	var loadStripeHandler = function(params, callback){
+		if (StripeCheckout === undefined){
+			alert('Please import the Stripe JS library: https://checkout.stripe.com/checkout.js')
+			return
+		}
+
 		if (config.site_id == null){
 			alert('Please Set Your TURBO_APP_ID')
 			return null
