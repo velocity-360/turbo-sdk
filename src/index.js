@@ -1,9 +1,11 @@
 var Turbo = function(credentials){
 	const BASE_URL = 'https://velocity-microservices.herokuapp.com'
+	const DASHBOARD_URL = 'https://www.turbo360.co'
 
 	var config = {
 		site_id: credentials['site_id'],
-		base_url: BASE_URL
+		base_url: BASE_URL,
+		dashboard_url: DASHBOARD_URL
 	}
 
 	var createUser = function(params, completion){
