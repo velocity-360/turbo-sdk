@@ -1,14 +1,11 @@
 var TurboStorage = function(config){
 
+	document.body.innerHTML += '<div id="dropzone" style="display:none"></div>'
 	var currentDropzone = null
 	
-	var initializeDropzone = function(el, completion){
-		if (el == null){
-			completion(new Error('dropzone element not specified'), null)
-			return
-		}
+	var uploadFile = function(completion, onUploadStart){
+		var dropzone = document.getElementById('dropzone')
 
-		var dropzone = document.getElementById(el)
 		if (dropzone == null){
 			completion(new Error('dropzone element required'), null)
 			return
@@ -16,8 +13,8 @@ var TurboStorage = function(config){
 
 		if (dropzone.className.indexOf('dz-clickable') != -1){
 			if (currentDropzone != null){
-				document.getElementById(el).click()
-				completion(null, currentDropzone)
+				// document.getElementById('dropzone').click()
+				dropzone.click()
 				return
 			}
 		}
@@ -30,6 +27,7 @@ var TurboStorage = function(config){
 		var _completion = completion
 
 		var options = {
+			createImageThumbnails: false,
 			url: '/temp', // this is not the actual url. it gets reset in turbo.executeFunction(...)
 			method: method,
 			headers: headers,
@@ -45,8 +43,14 @@ var TurboStorage = function(config){
 					console.log('progress: '+progress+'%')
 				})
 			},
+			canceled: function(event){
+				console.log('Upload Cacneled')
+			},
 			sending: function(file, xhr){
 				console.log('Upload Starting: ' + file.name)
+				if (onUploadStart)
+					onUploadStart()
+
 				xhr.addEventListener('load', function(response){
 					// console.log('RESPNONSE TEXT: ' + JSON.stringify(xhr.responseText))
 
@@ -80,7 +84,7 @@ var TurboStorage = function(config){
 					}
 
 				    $.ajax({
-				        url: 'https://turbo-dashboard.herokuapp.com/api/blob',
+				        url: _config.dashboard_url + '/api/blob', //post this to the dashboard, not the main base url
 				        type: 'POST',
 				        data: JSON.stringify(blob),
 				        contentType: 'application/json; charset=utf-8',
@@ -92,7 +96,7 @@ var TurboStorage = function(config){
 						    	return
 				        	}
 
-				        	console.log('FILE UPLOADED: ' + JSON.stringify(data))
+							// console.log('FILE UPLOADED: ' + JSON.stringify(data))
 				        	_completion(null, data)
 							return
 				        },
@@ -145,7 +149,7 @@ var TurboStorage = function(config){
 			        async: true,
 			        success: function(data, status) {
 			        	if (data.confirmation != 'success'){
-					    	completion(new Error('Error: ' + data.message), null)
+					    	_completion(new Error('Error: ' + data.message), null)
 					    	return
 			        	}
 
@@ -168,12 +172,12 @@ var TurboStorage = function(config){
 			}
 		}
 
-		currentDropzone = new Dropzone('#'+el, options)
-		document.getElementById(el).click()
-		completion(null, currentDropzone)
+		// currentDropzone = new Dropzone('#'+el, options)
+		currentDropzone = new Dropzone('#dropzone', options)
+		document.getElementById('dropzone').click()
 	}
 
 	return {
-		initializeDropzone: initializeDropzone
+		uploadFile: uploadFile
 	}
 }
