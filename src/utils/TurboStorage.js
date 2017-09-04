@@ -3,9 +3,8 @@ var TurboStorage = function(config){
 	document.body.innerHTML += '<div id="dropzone" style="display:none"></div>'
 	var currentDropzone = null
 	
-	var uploadFile = function(completion, onUploadStart){
+	var uploadFile = function(completion, onUploadStart, onProgressUpdate){
 		var dropzone = document.getElementById('dropzone')
-
 		if (dropzone == null){
 			completion(new Error('dropzone element required'), null)
 			return
@@ -13,7 +12,6 @@ var TurboStorage = function(config){
 
 		if (dropzone.className.indexOf('dz-clickable') != -1){
 			if (currentDropzone != null){
-				// document.getElementById('dropzone').click()
 				dropzone.click()
 				return
 			}
@@ -23,13 +21,16 @@ var TurboStorage = function(config){
 		var site = null // full json of site, not just site id
 		var uploadUrl = null
 		var headers = null
+		var maxSize = 512
 		var method = 'PUT'
 		var _completion = completion
+		var _onProgressUpdate = onProgressUpdate
 
 		var options = {
 			createImageThumbnails: false,
 			url: '/temp', // this is not the actual url. it gets reset in turbo.executeFunction(...)
 			method: method,
+			maxFilesize: maxSize,
 			headers: headers,
 			init: function() {
 				this.on('processing', function(file){
@@ -40,7 +41,9 @@ var TurboStorage = function(config){
 
 				// progres is 0-100, e.g. "37.67389454804663"
 				this.on('totaluploadprogress', function(progress){
-					console.log('progress: '+progress+'%')
+					console.log('progress: ' + progress + '%')
+					if (_onProgressUpdate != null)
+						_onProgressUpdate(progress)
 				})
 			},
 			canceled: function(event){
