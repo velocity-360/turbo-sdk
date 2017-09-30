@@ -7,16 +7,15 @@ var gp_uglify = require('gulp-uglify')
 var path = require('path')
 
 
-gulp.task('copy', function() {
-    return gulp.src(
-            [
-                './src/utils/**',
-            ]
-        )
-        .pipe(gp_uglify())
-        .pipe(gulp.dest('./dist/utils/'))
-})
-
+// gulp.task('copy', function() {
+//     return gulp.src(
+//             [
+//                 './src/utils/**',
+//             ]
+//         )
+//         .pipe(gp_uglify())
+//         .pipe(gulp.dest('./dist/utils/'))
+// })
 
 // gulp.task('js', function(){
 //     return gulp.src(
@@ -46,6 +45,7 @@ gulp.task('build', function(){
                 './src/utils/Stripe.js',
                 './src/utils/Functions.js',
                 './src/utils/TurboStorage.js',
+                './src/utils/Vectors.js',
                 './src/index.js'
             ]
         )
