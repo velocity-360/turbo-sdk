@@ -2,6 +2,7 @@ var Turbo = function(credentials){
 	// const BASE_URL = 'https://velocity-microservices.herokuapp.com'
 	const BASE_URL = 'http://api.turbo360.co'
 	const DASHBOARD_URL = 'https://www.turbo360.co'
+	const APP_HEADER = 'Turbo-App-Id'
 
 	var config = {
 		site_id: credentials['site_id'],
@@ -30,6 +31,9 @@ var Turbo = function(credentials){
 			return
 		}
 
+		var headers = {}
+		headers[APP_HEADER] = config.site_id
+
 		params['site'] = config.site_id
 
 		var _config = config
@@ -37,6 +41,7 @@ var Turbo = function(credentials){
 	        // url: BASE_URL+'/api/user',
 	        url: BASE_URL+'/auth/createuser',
 	        type: 'POST',
+	        headers: headers,
 	        data: JSON.stringify(params),
 	        contentType: 'application/json; charset=utf-8',
 	        dataType: 'json',
@@ -96,6 +101,9 @@ var Turbo = function(credentials){
 			return
 		}
 
+		var headers = {}
+		headers[APP_HEADER] = config.site_id
+
 		params['site'] = config.site_id
 		// console.log('PARAMS: '+JSON.stringify(params))
 
@@ -104,6 +112,7 @@ var Turbo = function(credentials){
 	    $.ajax({
 	        url: url,
 	        type: 'POST',
+	        headers: headers,
 	        data: JSON.stringify(params),
 	        contentType: 'application/json; charset=utf-8',
 	        dataType: 'json',
@@ -218,7 +227,7 @@ var Turbo = function(credentials){
 			    $.ajax({
 			        url: __config.base_url+'/auth/currentuser',
 			        type: 'GET',
-			        headers: {'turbo-token': query.result.token},
+					headers: {'turbo-token': query.result.token},
 			        contentType: 'application/json; charset=utf-8',
 			        dataType: 'json',
 			        async: true,
@@ -279,10 +288,14 @@ var Turbo = function(credentials){
 			return
 		}
 
+		var headers = {}
+		headers[APP_HEADER] = config.site_id
+
 		params['site'] = config.site_id
 	    $.ajax({
 	        url: BASE_URL+'/api/'+resource.toLowerCase(),
 	        type: 'POST',
+	        headers: headers,
 	        data: JSON.stringify(params),
 	        contentType: 'application/json; charset=utf-8',
 	        dataType: 'json',
@@ -324,6 +337,9 @@ var Turbo = function(credentials){
 			return
 		}
 
+		var headers = {}
+		headers[APP_HEADER] = config.site_id
+
 		if (params == null)
 			params = {}
 
@@ -331,7 +347,7 @@ var Turbo = function(credentials){
 	    $.ajax({
 	        url: BASE_URL+'/api/'+resource.toLowerCase(),
 	        type: 'GET',
-	        data: params,
+	        headers: headers,
 	        contentType: 'application/json; charset=utf-8',
 	        dataType: 'json',
 	        async: true,
@@ -377,10 +393,16 @@ var Turbo = function(credentials){
 			return
 		}
 
-		params['site'] = config.site_id
+
+		var headers = {}
+		headers[APP_HEADER] = config.site_id
+
+		// params['site'] = config.site_id
+		var params = {site: config.site_id}
 	    $.ajax({
 	        url: BASE_URL+'/api/'+resource.toLowerCase()+'/'+id,
 	        type: 'GET',
+			headers: headers,
 	        contentType: 'application/json; charset=utf-8',
 	        dataType: 'json',
 	        async: true,
@@ -432,10 +454,14 @@ var Turbo = function(credentials){
 			entity[key] = value
 		})
 
+		var headers = {}
+		headers[APP_HEADER] = config.site_id
+
 		params['site'] = config.site_id
 	    $.ajax({
 	        url: BASE_URL+'/api/'+resource.toLowerCase()+'/'+entity.id,
 	        type: 'PUT',
+	        headers: headers,
 	        data: JSON.stringify(params),
 	        contentType: 'application/json; charset=utf-8',
 	        dataType: 'json',
@@ -477,10 +503,15 @@ var Turbo = function(credentials){
 			return
 		}
 
+		var headers = {}
+		headers[APP_HEADER] = config.site_id
+
 		// params['site'] = config.site_id
+		var params = {site: config.site_id}
 	    $.ajax({
 	        url: BASE_URL+'/api/'+resource.toLowerCase()+'/'+entity.id,
 	        type: 'DELETE',
+	        headers: headers,
 	        data: null,
 	        contentType: 'application/json; charset=utf-8',
 	        dataType: 'json',
@@ -503,6 +534,7 @@ var Turbo = function(credentials){
 	var stripeManager = StripeMgr(config)
 	var functionsManager = TurboFunctions(config)
 	var storageMgr = TurboStorage(config)
+	var vectorsMgr = TurboVectors(config)
 
 	var client = {
 		createUser: createUser,
