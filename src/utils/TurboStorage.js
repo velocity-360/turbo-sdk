@@ -190,7 +190,7 @@ var TurboStorage = function(config){
 		headers[config.turbo_app_header] = config.site_id
 
 		$.ajax({
-			url: _config.dashboard_url + '/api/blob',
+			url: config.dashboard_url + '/api/blob',
 			type: 'GET',
 			headers: headers,
 			data: params,
