@@ -653,7 +653,7 @@ var Turbo = function(credentials){
 		loadStripeHandler: stripeManager.loadStripeHandler,
 		executeFunction: functionsManager.executeFunction,
 		uploadFile: storageMgr.uploadFile,
-		getFiles: getFiles
+		getFiles: storageMgr.getFiles
 	}
 
 	return client
