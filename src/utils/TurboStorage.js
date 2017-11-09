@@ -181,9 +181,13 @@ var TurboStorage = function(config){
 	}
 
 	var getFiles = function(params, completion){
+		if (params == null) // can be null so check here
+			params = {}
+
+		params['site'] = config.site_id
+
 		var headers = {}
 		headers[config.turbo_app_header] = config.site_id
-		params['site'] = config.site_id
 
 		$.ajax({
 			url: _config.dashboard_url + '/api/blob',
