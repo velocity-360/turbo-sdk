@@ -7,7 +7,8 @@ var Turbo = function(credentials){
 	var config = {
 		site_id: credentials['site_id'],
 		base_url: BASE_URL,
-		dashboard_url: DASHBOARD_URL
+		dashboard_url: DASHBOARD_URL,
+		turbo_app_header: APP_HEADER		
 	}
 
 	var createUser = function(params, completion){
@@ -444,7 +445,7 @@ var Turbo = function(credentials){
 		}
 
 		if (params == null){
-			completion(new Error('Params required to create entity.'), null)
+			completion(new Error('Update params required.'), null)
 			return
 		}
 
@@ -529,6 +530,105 @@ var Turbo = function(credentials){
 		    }
 	    })
 	}
+
+	var updateEntity = function(resource, id, params, completion){
+		if ($ == null){
+			completion(new Error('Please include jQuery'), null)
+			return
+		}
+		
+		if (completion == null){
+			completion(new Error('Please include completion callback'), null)
+			return
+		}
+
+		if (config.site_id == null){
+			completion(new Error('Please Set Your TURBO_APP_ID'), null)
+			return
+		}
+
+		if (config.site_id.length < 20){
+			completion(new Error('Please Set Your TURBO_APP_ID'), null)
+			return
+		}
+
+		if (params == null){
+			completion(new Error('Update params required.'), null)
+			return
+		}
+
+		var headers = {}
+		headers[APP_HEADER] = config.site_id
+
+		params['site'] = config.site_id
+		$.ajax({
+			url: BASE_URL+'/api/'+resource.toLowerCase()+'/'+id,
+			type: 'PUT',
+			headers: headers,
+			data: JSON.stringify(params),
+			contentType: 'application/json; charset=utf-8',
+			dataType: 'json',
+			async: true,
+			success: function(data, status) {
+				if (data.confirmation != 'success'){
+					completion(new Error(data.message), null)
+					return
+				}
+
+		    	completion(null, data)
+	        },
+		    error: function(xhr, status, error) { 
+		    	completion(error, null)
+		    }
+	    })
+	}
+
+	var removeEntity = function(resource, id, completion){
+		if ($ == null){
+			completion(new Error('Please include jQuery'), null)
+			return
+		}
+		
+		if (completion == null){
+			completion(new Error('Please include completion callback'), null)
+			return
+		}
+
+		if (config.site_id == null){
+			completion(new Error('Please Set Your TURBO_APP_ID'), null)
+			return
+		}
+
+		if (config.site_id.length < 20){
+			completion(new Error('Please Set Your TURBO_APP_ID'), null)
+			return
+		}
+
+		var headers = {}
+		headers[APP_HEADER] = config.site_id
+
+		// var params = {site: config.site_id}
+	    $.ajax({
+	        url: BASE_URL+'/api/'+resource.toLowerCase()+'/'+id,
+	        type: 'DELETE',
+	        headers: headers,
+	        data: null,
+	        contentType: 'application/json; charset=utf-8',
+	        dataType: 'json',
+	        async: true,
+	        success: function(data, status) {
+	        	if (data.confirmation != 'success'){
+			    	completion(new Error(data.message), null)
+			    	return
+	        	}
+
+		    	completion(null, data)
+	        },
+		    error: function(xhr, status, error) { 
+		    	completion(error, null)
+		    }
+	    })		
+	}
 	
 	var emailUtils = TurboEmail(config)
 	var stripeManager = StripeMgr(config)
@@ -547,6 +647,8 @@ var Turbo = function(credentials){
 		fetchOne: fetchOne,
 		update: update,
 		remove: remove,
+		updateEntity: updateEntity,
+		removeEntity: removeEntity,
 		sendEmail: emailUtils.sendEmail,
 		loadStripeHandler: stripeManager.loadStripeHandler,
 		executeFunction: functionsManager.executeFunction,
