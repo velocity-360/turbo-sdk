@@ -180,7 +180,37 @@ var TurboStorage = function(config){
 		document.getElementById('dropzone').click()
 	}
 
+	var getFiles = function(params, completion){
+		var headers = {}
+		headers[APP_HEADER] = config.site_id
+		parse['site'] = config.site_id
+
+		$.ajax({
+			url: _config.dashboard_url + '/api/blob',
+			type: 'GET',
+			headers: headers,
+			data: params,
+			contentType: 'application/json; charset=utf-8',
+			dataType: 'json',
+			async: true,
+			success: function(data, status) {
+		    	if (data.confirmation != 'success'){
+			    	completion(new Error('Error: ' + data.message), null)
+			    	return
+		    	}
+
+		    	completion(null, data)
+				return
+		    },
+		    error: function(xhr, status, error) { 
+			    completion(new Error('Error: ' + error.message), null)
+				return
+		    }
+		})
+	}
+
 	return {
-		uploadFile: uploadFile
+		uploadFile: uploadFile,
+		getFiles: getFiles
 	}
 }

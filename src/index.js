@@ -652,7 +652,8 @@ var Turbo = function(credentials){
 		sendEmail: emailUtils.sendEmail,
 		loadStripeHandler: stripeManager.loadStripeHandler,
 		executeFunction: functionsManager.executeFunction,
-		uploadFile: storageMgr.uploadFile
+		uploadFile: storageMgr.uploadFile,
+		getFiles: getFiles
 	}
 
 	return client
