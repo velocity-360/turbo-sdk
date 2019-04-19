@@ -2,8 +2,21 @@ var TurboStorage = function(config){
 
 	document.body.innerHTML += '<div id="dropzone" style="display:none"></div>'
 	var currentDropzone = null
-	
-	var uploadFile = function(completion, onUploadStart, onProgressUpdate){
+
+	// var uploadFile = function(apiKey, completion, onUploadStart, onProgressUpdate){
+	var uploadFile = function(pkg){
+		var completion = pkg['completion']
+		if (completion == null){
+			console.log('Missing completion handler')
+			return
+		}
+
+		var apiKey = pkg['apiKey']
+		if (apiKey == null){
+			completion(new Error('API Key required'), null)
+			return
+		}
+
 		var dropzone = document.getElementById('dropzone')
 		if (dropzone == null){
 			completion(new Error('dropzone element required'), null)
@@ -23,8 +36,12 @@ var TurboStorage = function(config){
 		var headers = null
 		var maxSize = 512
 		var method = 'PUT'
+		// var _completion = completion
+		// var _onProgressUpdate = onProgressUpdate
 		var _completion = completion
-		var _onProgressUpdate = onProgressUpdate
+		var _apiKey = apiKey
+		var _onProgressUpdate = pkg['onProgressUpdate'] // can be null
+		var onUploadStart = pkg['onUploadStart'] // can be null
 
 		var options = {
 			createImageThumbnails: false,
@@ -79,36 +96,36 @@ var TurboStorage = function(config){
 
 					// send this to Turbo Dashboard to create Blob entity:
 					var blob = {
-						name: file.name, 
+						name: file.name,
 						type: file.type,
 						size: file.size,
 						url: url,
 						site: site.id
 					}
 
-				    $.ajax({
-				        url: _config.dashboard_url + '/api/blob', //post this to the dashboard, not the main base url
-				        type: 'POST',
-				        data: JSON.stringify(blob),
-				        contentType: 'application/json; charset=utf-8',
-				        dataType: 'json',
-				        async: true,
-				        success: function(data, status) {
-				        	if (data.confirmation != 'success'){
-						    	_completion(new Error('Error: ' + data.message), null)
-						    	return
-				        	}
+			    $.ajax({
+			        url: _config.dashboard_url + '/api/blob', //post this to the dashboard, not the main base url
+			        type: 'POST',
+			        data: JSON.stringify(blob),
+			        contentType: 'application/json; charset=utf-8',
+			        dataType: 'json',
+			        async: true,
+			        success: function(data, status) {
+			        	if (data.confirmation != 'success'){
+					    	_completion(new Error('Error: ' + data.message), null)
+					    	return
+			        	}
 
-							// console.log('FILE UPLOADED: ' + JSON.stringify(data))
-				        	_completion(null, data)
-							return
-				        },
-					    error: function(xhr, status, error) { 
+						// console.log('FILE UPLOADED: ' + JSON.stringify(data))
+			        	_completion(null, data)
+								return
+			        },
+					    error: function(xhr, status, error) {
 					    	// alert('Error: '+error.message)
 						    _completion(new Error('Error: ' + error.message), null)
-							return
+								return
 					    }
-				    })
+			    })
 				})
 
 				// this is an image
@@ -137,41 +154,42 @@ var TurboStorage = function(config){
 				var params = {
 					site: _config.site_id,
 					exec: 'upload-string',
-					filename: file.name, 
+					filename: file.name,
 					filetype: file.type
 				}
 
-				headers = {'Content-Type': params.filetype}
+				console.log('POST: ' + JSON.stringify(params))
+		    $.ajax({
+					url: _config.base_url + '/functions',
+					type: 'POST',
+					headers: {'Turbo-API-Key': 'Bearer '+_apiKey},
+					// headers: {'Content-Type': params.filetype, 'Turbo-API-Key': 'Bearer '+_apiKey}, // this broke the whole thing for some reason
+					data: JSON.stringify(params),
+					contentType: 'application/json; charset=utf-8',
+					dataType: 'json',
+					async: true,
+		        success: function(data, status) {
+		        	if (data.confirmation != 'success'){
+				    	_completion(new Error('Error: ' + data.message), null)
+				    	return
+		        	}
 
-			    $.ajax({
-			        url: _config.base_url + '/functions',
-			        type: 'POST',
-			        data: JSON.stringify(params),
-			        contentType: 'application/json; charset=utf-8',
-			        dataType: 'json',
-			        async: true,
-			        success: function(data, status) {
-			        	if (data.confirmation != 'success'){
-					    	_completion(new Error('Error: ' + data.message), null)
-					    	return
-			        	}
+							// console.log('UPLOAD URL: '+JSON.stringify(data))
+							// {"confirmation":"success","result":
+							// {"signedRequest":"https://s3.amazonaws.com/apps.velocity360.io%2Frec-league-iseysu/myfile.jpg…=1497822827&Signature=jRS6ZqfJvsvoXy66zHHgYIKn2bE%3D&x-amz-acl=public-read",
+							// "url":"https://apps.velocity360.io.s3.amazonaws.com/myfile.jpg"}}
+							// uploadUrl = data.result.signedRequest
 
-						// console.log('UPLOAD URL: '+JSON.stringify(data))
-						// {"confirmation":"success","result":
-						// {"signedRequest":"https://s3.amazonaws.com/apps.velocity360.io%2Frec-league-iseysu/myfile.jpg…=1497822827&Signature=jRS6ZqfJvsvoXy66zHHgYIKn2bE%3D&x-amz-acl=public-read",
-						// "url":"https://apps.velocity360.io.s3.amazonaws.com/myfile.jpg"}}
-						// uploadUrl = data.result.signedRequest
-
-						uploadUrl = data.result
-						site = data.site
-						done() // this initiates the upload  - kicks off the process
-						return
-			        },
-				    error: function(xhr, status, error) { 
+							uploadUrl = data.result
+							site = data.site
+							done() // this initiates the upload  - kicks off the process
+							return
+		        },
+				    error: function(xhr, status, error) {
 				    	alert('Error: '+error.message)
-						return
+							return
 				    }
-			    })
+		    })
 			}
 		}
 
@@ -206,7 +224,7 @@ var TurboStorage = function(config){
 		    	completion(null, data)
 				return
 		    },
-		    error: function(xhr, status, error) { 
+		    error: function(xhr, status, error) {
 			    completion(new Error('Error: ' + error.message), null)
 				return
 		    }
