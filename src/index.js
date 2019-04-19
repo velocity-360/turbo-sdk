@@ -1,5 +1,6 @@
 var Turbo = function(credentials){
 	// const BASE_URL = 'https://velocity-microservices.herokuapp.com'
+	// const BASE_URL = 'http://localhost:3000' // for local testing
 	const BASE_URL = 'https://api.turbo360.co'
 	const DASHBOARD_URL = 'https://www.turbo360.co'
 	const APP_HEADER = 'Turbo-App-Id'
@@ -630,7 +631,7 @@ var Turbo = function(credentials){
 	    })		
 	}
 	
-	var emailUtils = TurboEmail(config)
+	// var emailUtils = TurboEmail(config)
 	var stripeManager = StripeMgr(config)
 	var functionsManager = TurboFunctions(config)
 	var storageMgr = TurboStorage(config)
@@ -649,7 +650,7 @@ var Turbo = function(credentials){
 		remove: remove,
 		updateEntity: updateEntity,
 		removeEntity: removeEntity,
-		sendEmail: emailUtils.sendEmail,
+		// sendEmail: emailUtils.sendEmail,
 		loadStripeHandler: stripeManager.loadStripeHandler,
 		executeFunction: functionsManager.executeFunction,
 		uploadFile: storageMgr.uploadFile,
