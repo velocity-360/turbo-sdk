@@ -3,7 +3,6 @@ var TurboStorage = function(config){
 	document.body.innerHTML += '<div id="dropzone" style="display:none"></div>'
 	var currentDropzone = null
 
-	// var uploadFile = function(apiKey, completion, onUploadStart, onProgressUpdate){
 	var uploadFile = function(pkg){
 		var completion = pkg['completion']
 		if (completion == null){
