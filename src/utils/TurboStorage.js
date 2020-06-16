@@ -103,29 +103,29 @@ var TurboStorage = function(config){
 						site: site.id
 					}
 
-			    $.ajax({
-			        url: _config.dashboard_url + '/api/blob', //post this to the dashboard, not the main base url
-			        type: 'POST',
-			        data: JSON.stringify(blob),
-			        contentType: 'application/json; charset=utf-8',
-			        dataType: 'json',
-			        async: true,
-			        success: function(data, status) {
-			        	if (data.confirmation != 'success'){
-					    	_completion(new Error('Error: ' + data.message), null)
-					    	return
-			        	}
+					$.ajax({
+						url: _config.dashboard_url + '/api/blob', //post this to the dashboard, not the main base url
+						type: 'POST',
+						data: JSON.stringify(blob),
+						contentType: 'application/json; charset=utf-8',
+						dataType: 'json',
+						async: true,
+						success: function(data, status) {
+							if (data.confirmation != 'success'){
+								_completion(new Error('Error: ' + data.message), null)
+								return
+							}
 
-						// console.log('FILE UPLOADED: ' + JSON.stringify(data))
-			        	_completion(null, data)
+							// console.log('FILE UPLOADED: ' + JSON.stringify(data))
+							_completion(null, data)
+									return
+						},
+						error: function(xhr, status, error) {
+							// alert('Error: '+error.message)
+							_completion(new Error('Error: ' + error.message), null)
 								return
-			        },
-					    error: function(xhr, status, error) {
-					    	// alert('Error: '+error.message)
-						    _completion(new Error('Error: ' + error.message), null)
-								return
-					    }
-			    })
+						}
+					})
 				})
 
 				// this is an image
@@ -159,7 +159,7 @@ var TurboStorage = function(config){
 				}
 
 				console.log('POST: ' + JSON.stringify(params))
-		    $.ajax({
+			    $.ajax({
 					url: _config.base_url + '/functions',
 					type: 'POST',
 					headers: {'Turbo-API-Key': 'Bearer '+_apiKey},
@@ -168,28 +168,28 @@ var TurboStorage = function(config){
 					contentType: 'application/json; charset=utf-8',
 					dataType: 'json',
 					async: true,
-		        success: function(data, status) {
-		        	if (data.confirmation != 'success'){
-				    	_completion(new Error('Error: ' + data.message), null)
-				    	return
-		        	}
-
-							// console.log('UPLOAD URL: '+JSON.stringify(data))
-							// {"confirmation":"success","result":
-							// {"signedRequest":"https://s3.amazonaws.com/apps.velocity360.io%2Frec-league-iseysu/myfile.jpg…=1497822827&Signature=jRS6ZqfJvsvoXy66zHHgYIKn2bE%3D&x-amz-acl=public-read",
-							// "url":"https://apps.velocity360.io.s3.amazonaws.com/myfile.jpg"}}
-							// uploadUrl = data.result.signedRequest
-
-							uploadUrl = data.result
-							site = data.site
-							done() // this initiates the upload  - kicks off the process
+			        success: function(data, status) {
+						if (data.confirmation != 'success'){
+							_completion(new Error('Error: ' + data.message), null)
 							return
-		        },
+						}
+
+						// console.log('UPLOAD URL: '+JSON.stringify(data))
+						// {"confirmation":"success","result":
+						// {"signedRequest":"https://s3.amazonaws.com/apps.velocity360.io%2Frec-league-iseysu/myfile.jpg…=1497822827&Signature=jRS6ZqfJvsvoXy66zHHgYIKn2bE%3D&x-amz-acl=public-read",
+						// "url":"https://apps.velocity360.io.s3.amazonaws.com/myfile.jpg"}}
+						// uploadUrl = data.result.signedRequest
+
+						uploadUrl = data.result
+						site = data.site
+						done() // this initiates the upload  - kicks off the process
+						return
+			        },
 				    error: function(xhr, status, error) {
 				    	alert('Error: '+error.message)
 							return
 				    }
-		    })
+		    	})
 			}
 		}
 
